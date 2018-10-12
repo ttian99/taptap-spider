@@ -1,0 +1,12 @@
+{
+    "apps": [
+        {
+            "name": "taptap-spider",
+            "cwd": "./",
+            "script": "./taptap.js",
+            "exec_interpreter": "bash",
+            "watch": false,
+            "autorestart": false
+        }
+    ]
+}

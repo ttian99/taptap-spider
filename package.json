@@ -4,13 +4,18 @@
   "description": "a spider for taptap games",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "spider": "nohup node taptap.js >> ./log/output.log 2>&1 &",
+    "start": "pm2 start taptap.js --autorestart=false",
+    "test": "node taptap.js"
   },
   "author": "Monkey Jiao",
   "license": "ISC",
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
+    "fast-csv": "^2.4.1",
     "fs-extra": "^7.0.0",
+    "lodash": "^4.17.11",
+    "moment": "^2.22.2",
     "superagent": "^4.0.0-beta.5"
   }
 }
