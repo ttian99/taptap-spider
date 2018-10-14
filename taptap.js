@@ -34,7 +34,6 @@ async function main(id) {
         // 标记文件末尾
         // ws.end();
         csvStream.end();
-        stop();
         return;
     }
 
@@ -54,13 +53,13 @@ async function main(id) {
 
     let $
     try {
-        const res = await request.get(newUrl).http2();
+        const res = await request.get(newUrl);
         $ = cheerio.load(res.text);
     } catch (error) {
         // console.log('error: ' + error.stack);
         id++;
         main(id);
-        throw err;
+        throw error;
         return;
     }
 
