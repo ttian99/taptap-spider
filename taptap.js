@@ -5,20 +5,28 @@ const csv = require('fast-csv');
 const _ = require('lodash');
 const moment = require('moment');
 
-let url = 'https://www.taptap.com/app/';
+let BASE_URL = 'https://www.taptap.com/app/';
+const BASE_FILE = 'taptap.csv';
+const NEW_FILE = `taptap_${moment().format('YYYYMMDD')}.csv`;
+const config = fs.readJsonSync('config.json');
+const LIMIT = config.total;
 
-// const LIMIT = 150000;
-const LIMIT = 15;
-const fileName = 'taptap_' + moment().format('YYYYMMDD') + '.csv';
-
-var csvStream = csv.createWriteStream({ headers: true });
-var ws = fs.createWriteStream(fileName);
+let ws, csvStream;
+if (config.startId === 1) {
+    ws = fs.createWriteStream(BASE_FILE, { flags: 'w', encoding: 'utf8' });
+    csvStream = csv.createWriteStream({ headers: true });
+} else {
+    ws = fs.createWriteStream(BASE_FILE, { flags: 'a+', encoding: 'utf8' });
+    ws.write('\n')
+    csvStream = csv.createWriteStream({ headers: false });
+}
 csvStream.pipe(ws);
 
 ws.on('open', function () {
     console.log('write start');
 });
 ws.on('finish', function () {
+    fs.copyFileSync(BASE_FILE, NEW_FILE);
     console.log('write over');
 });
 ws.on('error', function (err) {
@@ -37,7 +45,7 @@ async function main(id) {
         return;
     }
 
-    const newUrl = url + id;
+    const newUrl = BASE_URL + id;
     console.log('id = ' + id);
     console.log('newUrl = ' + newUrl);
     const data = {
@@ -58,6 +66,7 @@ async function main(id) {
     } catch (error) {
         // console.log('error: ' + error.stack);
         id++;
+        fs.writeJsonSync('config.json', { startId: id, total: config.total })
         main(id);
         throw error;
         return;
@@ -105,10 +114,10 @@ async function main(id) {
     // 写入数据
     // ws.write(JSON.stringify(data), 'UTF8');
     csvStream.write(data);
-
+    // 递归下一个
     id++;
+    fs.writeJsonSync('config.json', { startId: id, total: config.total })
     main(id);
 }
 
-main(1);
- 
+main(config.startId);
