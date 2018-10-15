@@ -29,12 +29,12 @@ ws.on('finish', function () {
     fs.copyFileSync(BASE_FILE, NEW_FILE);
     console.log('write over');
 });
-ws.on('error', function (err) {
-    console.log(err.stack);
-    throw err;
-    // ws.end();
-    // csvStream.end();
-});
+// ws.on('error', function (err) {
+//     console.log(err.stack);
+//     throw err;
+//     // ws.end();
+//     // csvStream.end();
+// });
 
 async function main(id) {
 
@@ -59,7 +59,8 @@ async function main(id) {
         review: '',
     }
 
-    let $
+    let $;
+
     try {
         const res = await request.get(newUrl);
         $ = cheerio.load(res.text);
@@ -68,7 +69,6 @@ async function main(id) {
         id++;
         fs.writeJsonSync('config.json', { startId: id, total: config.total })
         main(id);
-        throw error;
         return;
     }
 
