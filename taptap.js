@@ -48,7 +48,7 @@ async function main(id) {
     const newUrl = BASE_URL + id;
     console.log('id = ' + id);
     console.log('newUrl = ' + newUrl);
-    const data = {
+    let data = {
         id: 0,
         name: '',
         score: '',
