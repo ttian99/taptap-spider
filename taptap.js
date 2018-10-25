@@ -36,6 +36,14 @@ ws.on('finish', function () {
 //     // csvStream.end();
 // });
 
+
+// 开始爬取下一个
+function next(id, total) {
+    id++;
+    fs.writeJsonSync('config.json', { startId: id, total: total })
+    return main(id);
+}
+
 async function main(id) {
 
     if (id > LIMIT) {
@@ -55,8 +63,10 @@ async function main(id) {
         publisher: '',
         developer: '',
         follow: '',
+        order: '',
         topic: '',
         review: '',
+        recommend: '',
     }
 
     let $;
@@ -66,9 +76,7 @@ async function main(id) {
         $ = cheerio.load(res.text);
     } catch (error) {
         // console.log('error: ' + error.stack);
-        id++;
-        fs.writeJsonSync('config.json', { startId: id, total: config.total })
-        main(id);
+        next(id, config.total);
         return;
     }
 
@@ -111,13 +119,16 @@ async function main(id) {
             data.topic = $(this).find('small').text();
         }
     })
+    // 获取编辑推荐
+    const rec = $('.main-header-rec').find('span').text();
+    data.recommend = rec.match('编辑推荐') ? 'yes' : '';
     // 写入数据
     // ws.write(JSON.stringify(data), 'UTF8');
     csvStream.write(data);
     // 递归下一个
-    id++;
-    fs.writeJsonSync('config.json', { startId: id, total: config.total })
-    main(id);
+    next(id, config.total);
 }
 
-main(config.startId);
+// main(config.startId);
+// main(140432)
+main(5223)
