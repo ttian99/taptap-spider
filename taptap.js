@@ -62,11 +62,15 @@ async function main(id) {
         score: '',
         publisher: '',
         developer: '',
+        install: '',
         follow: '',
         order: '',
         topic: '',
         review: '',
         recommend: '',
+        size: '',
+        softwareVersion: '',
+        datePublished: '',
     }
 
     let $;
@@ -122,6 +126,20 @@ async function main(id) {
     // 获取编辑推荐
     const rec = $('.main-header-rec').find('span').text();
     data.recommend = rec.match('编辑推荐') ? 'yes' : '';
+    // 获取文件大小，当前版本，更新时间
+    $('.main-body-info').find('.info-item-title').each(function(i, elem) {
+        const title = elem.firstChild ? elem.firstChild.data : '';
+        const value = elem.next.next.firstChild ? elem.next.next.firstChild.data : '';
+        if (title.match('文件大小')) {
+            data.size = value;
+        }
+        if (title.match('更新时间')) {
+            data.datePublished = value;
+        }
+        if (title.match('当前版本')) {
+            data.softwareVersion = value;
+        }
+    });
     // 写入数据
     // ws.write(JSON.stringify(data), 'UTF8');
     csvStream.write(data);
@@ -129,6 +147,4 @@ async function main(id) {
     next(id, config.total);
 }
 
-// main(config.startId);
-// main(140432)
-main(5223)
+main(config.startId);
